@@ -1,0 +1,27 @@
+# Ignorar entorno virtual de Python
+venv/
+
+# Ignorar archivo de variables de entorno
+.env
+
+# Ignorar cachés de Python
+__pycache__/
+**/__pycache__/
+
+# Ignorar archivos de sistema de macOS
+.DS_Store
+**/.DS_Store
+
+# Ignorar configuraciones de GitHub
+.github/
+
+#ignorar pruebas unitarias
+.pytest_cache/
+tests/
+
+#Ignorar datos locales
+chroma_db/
+files/
+
+#MacOS
+.DS_Store

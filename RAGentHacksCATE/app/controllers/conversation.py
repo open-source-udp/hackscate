@@ -1,0 +1,24 @@
+from typing import Dict, Any, List, Optional
+from app.rag.qa import answer_with_rag
+from app.utils.logger import logger
+from app.models.llm import Agent
+
+class ConversationManager:
+    def __init__(self, use_rag: bool = True, collection_name: str = "study_collection"):
+        self.use_rag = use_rag
+        self.collection_name = collection_name
+        self.history: List[Dict[str, str]] = [] 
+
+    def handle_query(self, query: str, use_rag_override: bool = None, files: Optional[List[str]] = None):
+        use_rag = self.use_rag if use_rag_override is None else use_rag_override
+        self.history.append({"role": "user", "text": query})
+        if use_rag:
+            res = answer_with_rag(query, collection_name=self.collection_name, files=files)
+            self.history.append({"role": "assistant", "text": res["answer"]})
+            return res
+        else:
+            llm = Agent()
+            prompt = f"Eres un asistente. Responde: {query}"
+            answer = llm.generate(prompt)
+            self.history.append({"role": "assistant", "text": answer})
+            return {"answer": answer, "source_documents": []}

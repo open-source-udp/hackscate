@@ -1,0 +1,10 @@
+from app.controllers.conversation import ConversationManager
+from typing import Dict, Any, List, Optional
+
+class Chatbot:
+    
+    def __init__(self, use_rag: bool = True, collection_name: str = "study_collection"):
+        self.manager = ConversationManager(use_rag=use_rag, collection_name=collection_name)
+
+    def ask(self, query: str, use_rag_override: bool = None, files: Optional[List[str]] = None) -> Dict[str, Any]:
+        return self.manager.handle_query(query, use_rag_override=use_rag_override, files=files)
