@@ -5,7 +5,12 @@ import Flashcards from '../Flashcards';
 
 type ToolTab = 'chat' | 'flashcards';
 
-function ToolsPanel() {
+interface ToolsPanelProps {
+  attachedFiles?: string[];
+  onClearAttachments?: () => void;
+}
+
+function ToolsPanel({ attachedFiles = [], onClearAttachments }: ToolsPanelProps) {
   const [activeTab, setActiveTab] = useState<ToolTab>('chat');
 
   return (
@@ -30,6 +35,9 @@ function ToolsPanel() {
             />
           </svg>
           Chat
+          {attachedFiles.length > 0 && (
+            <span className={styles.badge}>{attachedFiles.length}</span>
+          )}
         </button>
         <button
           className={`${styles.tab} ${activeTab === 'flashcards' ? styles.active : ''}`}
@@ -53,7 +61,12 @@ function ToolsPanel() {
         </button>
       </div>
       <div className={styles.tabContent}>
-        {activeTab === 'chat' && <Chat />}
+        {activeTab === 'chat' && (
+          <Chat 
+            attachedFiles={attachedFiles} 
+            onClearAttachments={onClearAttachments} 
+          />
+        )}
         {activeTab === 'flashcards' && <Flashcards />}
       </div>
     </div>
