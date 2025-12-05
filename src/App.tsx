@@ -12,11 +12,12 @@ function App() {
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [smartSearchActive, setSmartSearchActive] = useState(false);
+  const [selectedFiles, setSelectedFiles] = useState<string[]>([]);
 
   useEffect(() => {
     async function fetchFiles() {
       try {
-        const fileList = await listFiles('eit/CIT-2013');
+        const fileList = await listFiles('plan-comun/CII-2750');
         setFiles(fileList);
       } catch (err) {
         setError(err instanceof Error ? err.message : 'Error al cargar archivos');
@@ -46,6 +47,19 @@ function App() {
     setSmartSearchActive((prev) => !prev);
   };
 
+  const handleFileSelect = (key: string) => {
+    setSelectedFiles((prev) => {
+      if (prev.includes(key)) {
+        return prev.filter((k) => k !== key);
+      }
+      return [...prev, key];
+    });
+  };
+
+  const handleClearAttachments = () => {
+    setSelectedFiles([]);
+  };
+
   return (
     <div className={styles.appContainer}>
       <section className={styles.filesSection}>
@@ -65,12 +79,20 @@ function App() {
               smartSearchActive={smartSearchActive}
               onSmartSearchToggle={handleSmartSearchToggle}
             />
-            <FileList files={filteredFiles} onDownload={handleDownload} />
+            <FileList 
+              files={filteredFiles} 
+              selectedFiles={selectedFiles}
+              onDownload={handleDownload} 
+              onSelect={handleFileSelect}
+            />
           </>
         )}
       </section>
       <aside className={styles.chatSection}>
-        <ToolsPanel />
+        <ToolsPanel 
+          attachedFiles={selectedFiles}
+          onClearAttachments={handleClearAttachments}
+        />
       </aside>
     </div>
   );
