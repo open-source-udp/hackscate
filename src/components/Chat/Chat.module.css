@@ -91,3 +91,55 @@
   text-align: center;
   padding: 24px;
 }
+
+.messageAttachments {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 8px;
+}
+
+.attachmentChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 8px;
+  background-color: rgba(255, 255, 255, 0.2);
+  border-radius: 6px;
+  font-size: 12px;
+}
+
+.messageText {
+  margin: 0;
+}
+
+.attachedFilesPreview {
+  padding: 8px 16px;
+  background-color: #e7f1ff;
+  border-bottom: 1px solid #cce0ff;
+}
+
+.attachedLabel {
+  font-size: 12px;
+  color: #0056b3;
+  font-weight: 500;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.attachedFilesList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.attachedFileChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background-color: #007bff;
+  color: white;
+  border-radius: 12px;
+  font-size: 12px;
+}

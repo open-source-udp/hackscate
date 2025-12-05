@@ -5,9 +5,15 @@ interface Message {
   id: number;
   text: string;
   sender: 'user' | 'bot';
+  attachedFiles?: string[];
 }
 
-function Chat() {
+interface ChatProps {
+  attachedFiles?: string[];
+  onClearAttachments?: () => void;
+}
+
+function Chat({ attachedFiles = [], onClearAttachments }: ChatProps) {
   const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isLoading, setIsLoading] = useState(false);
@@ -24,16 +30,23 @@ function Chat() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!inputValue.trim() || isLoading) return;
+    if ((!inputValue.trim() && attachedFiles.length === 0) || isLoading) return;
 
     const userMessage: Message = {
       id: Date.now(),
       text: inputValue.trim(),
       sender: 'user',
-    };
+      attachedFiles: attachedFiles.length > 0 ? [...attachedFiles] : undefined,
+    };)
 
     setMessages((prev) => [...prev, userMessage]);
     setInputValue('');
+    
+    // Limpiar archivos adjuntos después de enviar
+    if (onClearAttachments) {
+      onClearAttachments();
+    }
+    
     setIsLoading(true);
 
     // Simular respuesta del bot (aquí puedes integrar una API de chat)
@@ -46,6 +59,10 @@ function Chat() {
       setMessages((prev) => [...prev, botMessage]);
       setIsLoading(false);
     }, 1000);
+  };
+
+  const getFileName = (key: string) => {
+    return key.split('/').pop() || key;
   };
 
   return (
@@ -63,7 +80,16 @@ function Chat() {
                 message.sender === 'user' ? styles.messageUser : styles.messageBot
               }`}
             >
-              {message.text}
+              {message.attachedFiles && message.attachedFiles.length > 0 && (
+                <div className={styles.messageAttachments}>
+                  {message.attachedFiles.map((file, index) => (
+                    <span key={index} className={styles.attachmentChip}>
+                      📎 {getFileName(file)}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {message.text && <p className={styles.messageText}>{message.text}</p>}
             </div>
           ))
         )}
@@ -71,19 +97,31 @@ function Chat() {
       </div>
 
       <div className={styles.chatInputContainer}>
+        {attachedFiles.length > 0 && (
+          <div className={styles.attachedFilesPreview}>
+            <span className={styles.attachedLabel}>Archivos adjuntos:</span>
+            <div className={styles.attachedFilesList}>
+              {attachedFiles.map((file, index) => (
+                <span key={index} className={styles.attachedFileChip}>
+                  📎 {getFileName(file)}
+                </span>
+              ))}
+            </div>
+          </div>
+        )}
         <form onSubmit={handleSubmit} className={styles.chatForm}>
           <input
             type="text"
             value={inputValue}
             onChange={(e) => setInputValue(e.target.value)}
-            placeholder="Escribe un mensaje..."
+            placeholder={attachedFiles.length > 0 ? "Añade un mensaje o envía los archivos..." : "Escribe un mensaje..."}
             className={styles.chatInput}
             disabled={isLoading}
           />
           <button
             type="submit"
             className={styles.chatSendButton}
-            disabled={isLoading || !inputValue.trim()}
+            disabled={isLoading || (!inputValue.trim() && attachedFiles.length === 0)}
           >
             {isLoading ? '...' : 'Enviar'}
           </button>
