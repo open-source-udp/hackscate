@@ -10,6 +10,10 @@
   cursor: pointer;
   text-decoration: none;
   color: inherit;
+  border: none;
+  height: 120px;
+  width: 100%;
+  box-sizing: border-box;
 }
 
 .fileItem:hover {
@@ -23,12 +27,15 @@
   height: 48px;
   color: #6c757d;
   margin-bottom: 12px;
+  flex-shrink: 0;
 }
 
 .fileName {
   font-size: 14px;
   color: #333;
   text-align: center;
-  word-break: break-word;
   max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }

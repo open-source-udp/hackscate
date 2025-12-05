@@ -16,6 +16,7 @@ function FileItem({ fileName, fileKey, onDownload }: FileItemProps) {
       type="button"
       onClick={handleClick}
       className={styles.fileItem}
+      title={fileName}
     >
       <span className={styles.fileName}>{fileName}</span>
     </button>
