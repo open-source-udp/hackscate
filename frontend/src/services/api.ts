@@ -1,4 +1,4 @@
-const API_URL = import.meta.env.VITE_RAG_API_URL || 'http://0.0.0.0:8000';
+const API_URL = import.meta.env.VITE_RAG_API_URL || 'http://localhost:8000';
 const DEFAULT_RAMO = 'CII-2750';
 
 // Tipos de respuesta de la API
@@ -47,8 +47,43 @@ export interface APIResponse {
 // Utilidad para parsear el JSON anidado en "answer"
 function parseAnswerJSON<T>(response: APIResponse): T {
   try {
-    return JSON.parse(response.answer) as T;
-  } catch {
+    // Si answer ya es un objeto, devolverlo directamente
+    if (typeof response.answer === 'object' && response.answer !== null) {
+      console.log('Answer is already an object:', response.answer);
+      return response.answer as T;
+    }
+    
+    // Si es string, intentar parsearlo
+    if (typeof response.answer === 'string') {
+      // Limpiar posibles caracteres problemáticos al inicio/final
+      const cleanedAnswer = response.answer.trim();
+      const parsed = JSON.parse(cleanedAnswer);
+      console.log('Parsed API response:', parsed);
+      return parsed as T;
+    }
+    
+    throw new Error('Formato de respuesta no reconocido');
+  } catch (err) {
+    console.error('Parse error details:', err);
+    console.error('Response answer type:', typeof response.answer);
+    console.error('Response answer (first 500 chars):', 
+      typeof response.answer === 'string' ? response.answer.substring(0, 500) : response.answer
+    );
+    
+    // Último intento: si parece ser JSON válido pero falla, intentar con eval seguro
+    if (typeof response.answer === 'string' && response.answer.startsWith('{')) {
+      try {
+        // Intento alternativo reemplazando caracteres problemáticos
+        const sanitized = response.answer
+          .replace(/\n/g, '\\n')
+          .replace(/\r/g, '\\r')
+          .replace(/\t/g, '\\t');
+        return JSON.parse(sanitized) as T;
+      } catch {
+        // Si aún falla, continuar con el error original
+      }
+    }
+    
     throw new Error('Error al parsear la respuesta de la API');
   }
 }

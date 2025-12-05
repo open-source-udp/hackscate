@@ -79,6 +79,11 @@ function Flashcards({ attachedFiles = [], onClearAttachments }: FlashcardsProps)
         attachedFiles.length > 0 ? attachedFiles : undefined
       );
 
+      // Validar que la respuesta tenga la estructura esperada
+      if (!result.data || !result.data.flashcards || !Array.isArray(result.data.flashcards)) {
+        throw new Error('La respuesta de la API no tiene el formato esperado');
+      }
+
       const newCards: Flashcard[] = result.data.flashcards.map((fc: FlashcardData) => ({
         id: fc.id,
         question: fc.question,
