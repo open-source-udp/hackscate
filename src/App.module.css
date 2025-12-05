@@ -31,3 +31,12 @@
 .errorContainer {
   color: #dc3545;
 }
+
+.searchResultsInfo {
+  padding: 8px 16px;
+  background-color: #e7f1ff;
+  border-radius: 8px;
+  margin-bottom: 16px;
+  font-size: 13px;
+  color: #0056b3;
+}

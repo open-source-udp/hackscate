@@ -67,7 +67,12 @@ function ToolsPanel({ attachedFiles = [], onClearAttachments }: ToolsPanelProps)
             onClearAttachments={onClearAttachments} 
           />
         )}
-        {activeTab === 'flashcards' && <Flashcards />}
+        {activeTab === 'flashcards' && (
+          <Flashcards 
+            attachedFiles={attachedFiles}
+            onClearAttachments={onClearAttachments}
+          />
+        )}
       </div>
     </div>
   );

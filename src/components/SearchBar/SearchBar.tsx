@@ -5,6 +5,7 @@ interface SearchBarProps {
   onChange: (value: string) => void;
   smartSearchActive?: boolean;
   onSmartSearchToggle?: () => void;
+  isSearching?: boolean;
 }
 
 function SearchBar({
@@ -12,9 +13,10 @@ function SearchBar({
   onChange,
   smartSearchActive = false,
   onSmartSearchToggle,
+  isSearching = false,
 }: SearchBarProps) {
   const placeholder = smartSearchActive
-    ? 'Buscar inteligentemente...'
+    ? (isSearching ? 'Buscando...' : 'Buscar por contenido...')
     : 'Buscar archivos...';
 
   return (
