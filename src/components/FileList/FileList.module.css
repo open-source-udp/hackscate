@@ -1,0 +1,13 @@
+.fileList {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+  gap: 16px;
+}
+
+.emptyMessage {
+  text-align: center;
+  color: #6c757d;
+  padding: 24px;
+  font-size: 14px;
+  grid-column: 1 / -1;
+}
