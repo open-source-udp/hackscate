@@ -5,6 +5,85 @@
   overflow: hidden;
 }
 
+.generateSection {
+  padding: 16px;
+  border-bottom: 1px solid #e9ecef;
+  background-color: #f8f9fa;
+}
+
+.attachedPreview {
+  margin-bottom: 12px;
+}
+
+.attachedLabel {
+  font-size: 12px;
+  color: #6c757d;
+  display: block;
+  margin-bottom: 6px;
+}
+
+.attachedList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.attachedChip {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 10px;
+  background-color: #667eea;
+  color: white;
+  border-radius: 12px;
+  font-size: 12px;
+}
+
+.generateForm {
+  display: flex;
+  gap: 8px;
+}
+
+.promptInput {
+  flex: 1;
+  padding: 10px 14px;
+  border: 1px solid #dee2e6;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s ease;
+}
+
+.promptInput:focus {
+  border-color: #667eea;
+}
+
+.generateButton {
+  padding: 10px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 14px;
+  cursor: pointer;
+  transition: opacity 0.2s ease;
+}
+
+.generateButton:hover {
+  opacity: 0.9;
+}
+
+.generateButton:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.errorText {
+  color: #dc3545;
+  font-size: 13px;
+  margin: 8px 0 0;
+}
+
 .flashcardsList {
   flex: 1;
   overflow-y: auto;
@@ -64,14 +143,63 @@
   background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
   color: white;
   transform: rotateY(180deg);
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cardHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  position: absolute;
+  top: 10px;
+  left: 0;
+  padding: 0 14px;
+  box-sizing: border-box;
 }
 
 .cardNumber {
   font-size: 11px;
   opacity: 0.7;
-  position: absolute;
-  top: 10px;
-  left: 14px;
+}
+
+.difficulty {
+  font-size: 10px;
+  padding: 2px 8px;
+  border-radius: 10px;
+  text-transform: uppercase;
+  font-weight: 600;
+}
+
+.difficultyEasy {
+  background-color: rgba(255, 255, 255, 0.3);
+}
+
+.difficultyMedium {
+  background-color: rgba(255, 193, 7, 0.5);
+}
+
+.difficultyHard {
+  background-color: rgba(220, 53, 69, 0.5);
+}
+
+.cardQuestion,
+.cardAnswer {
+  margin: 0;
+  padding-top: 20px;
+}
+
+.topic {
+  font-size: 11px;
+  opacity: 0.8;
+  margin-top: auto;
+}
+
+.source {
+  font-size: 11px;
+  opacity: 0.8;
+  margin-top: auto;
 }
 
 .loadMoreTrigger {
