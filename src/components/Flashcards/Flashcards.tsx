@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 import styles from './Flashcards.module.css';
 
 export interface Flashcard {
@@ -8,34 +8,110 @@ export interface Flashcard {
 }
 
 interface FlashcardsProps {
-  cards?: Flashcard[];
+  initialCards?: Flashcard[];
 }
 
-const defaultCards: Flashcard[] = [
-  { id: 1, question: '¿Qué es React?', answer: 'Una biblioteca de JavaScript para construir interfaces de usuario' },
-  { id: 2, question: '¿Qué es un componente?', answer: 'Una pieza reutilizable de código que representa una parte de la interfaz' },
-  { id: 3, question: '¿Qué es el estado en React?', answer: 'Un objeto que almacena datos que pueden cambiar durante el ciclo de vida del componente' },
-];
+// Simulación de datos para el infinite scroll
+const generateMoreCards = (startId: number, count: number): Flashcard[] => {
+  const questions = [
+    { q: '¿Qué es React?', a: 'Una biblioteca de JavaScript para construir interfaces de usuario' },
+    { q: '¿Qué es un componente?', a: 'Una pieza reutilizable de código que representa una parte de la interfaz' },
+    { q: '¿Qué es el estado en React?', a: 'Un objeto que almacena datos que pueden cambiar durante el ciclo de vida del componente' },
+    { q: '¿Qué es JSX?', a: 'Una extensión de sintaxis para JavaScript que permite escribir HTML en React' },
+    { q: '¿Qué son los props?', a: 'Datos que se pasan de un componente padre a un componente hijo' },
+    { q: '¿Qué es el Virtual DOM?', a: 'Una representación ligera del DOM real que React usa para optimizar actualizaciones' },
+    { q: '¿Qué es un hook?', a: 'Funciones que permiten usar estado y otras características de React en componentes funcionales' },
+    { q: '¿Qué hace useEffect?', a: 'Permite realizar efectos secundarios en componentes funcionales' },
+    { q: '¿Qué es el contexto en React?', a: 'Una forma de pasar datos a través del árbol de componentes sin props' },
+    { q: '¿Qué es Redux?', a: 'Una biblioteca para manejar el estado global de la aplicación' },
+  ];
 
-function Flashcards({ cards = defaultCards }: FlashcardsProps) {
-  const [currentIndex, setCurrentIndex] = useState(0);
+  return Array.from({ length: count }, (_, i) => {
+    const idx = (startId + i) % questions.length;
+    return {
+      id: startId + i,
+      question: questions[idx].q,
+      answer: questions[idx].a,
+    };
+  });
+};
+
+const initialDefaultCards: Flashcard[] = generateMoreCards(1, 5);
+
+function FlashcardItem({ card }: { card: Flashcard }) {
   const [isFlipped, setIsFlipped] = useState(false);
 
-  const handlePrevious = () => {
-    setIsFlipped(false);
-    setCurrentIndex((prev) => (prev > 0 ? prev - 1 : prev));
-  };
+  return (
+    <div
+      className={`${styles.flashcard} ${isFlipped ? styles.flipped : ''}`}
+      onClick={() => setIsFlipped((prev) => !prev)}
+    >
+      <div className={styles.flashcardInner}>
+        <div className={styles.flashcardFront}>
+          <span className={styles.cardNumber}>#{card.id}</span>
+          {card.question}
+        </div>
+        <div className={styles.flashcardBack}>
+          {card.answer}
+        </div>
+      </div>
+    </div>
+  );
+}
 
-  const handleNext = () => {
-    setIsFlipped(false);
-    setCurrentIndex((prev) => (prev < cards.length - 1 ? prev + 1 : prev));
-  };
+function Flashcards({ initialCards = initialDefaultCards }: FlashcardsProps) {
+  const [cards, setCards] = useState<Flashcard[]>(initialCards);
+  const [isLoading, setIsLoading] = useState(false);
+  const [hasMore, setHasMore] = useState(true);
+  const observerRef = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
 
-  const handleFlip = () => {
-    setIsFlipped((prev) => !prev);
-  };
+  const loadMoreCards = useCallback(async () => {
+    if (isLoading || !hasMore) return;
 
-  if (cards.length === 0) {
+    setIsLoading(true);
+    
+    // Simular delay de carga desde API
+    await new Promise((resolve) => setTimeout(resolve, 800));
+    
+    const newCards = generateMoreCards(cards.length + 1, 5);
+    
+    // Simular fin de datos después de 30 cards
+    if (cards.length >= 25) {
+      setHasMore(false);
+    } else {
+      setCards((prev) => [...prev, ...newCards]);
+    }
+    
+    setIsLoading(false);
+  }, [cards.length, isLoading, hasMore]);
+
+  useEffect(() => {
+    const options = {
+      root: null,
+      rootMargin: '100px',
+      threshold: 0.1,
+    };
+
+    observerRef.current = new IntersectionObserver((entries) => {
+      const [entry] = entries;
+      if (entry.isIntersecting && hasMore && !isLoading) {
+        loadMoreCards();
+      }
+    }, options);
+
+    if (loadMoreRef.current) {
+      observerRef.current.observe(loadMoreRef.current);
+    }
+
+    return () => {
+      if (observerRef.current) {
+        observerRef.current.disconnect();
+      }
+    };
+  }, [loadMoreCards, hasMore, isLoading]);
+
+  if (cards.length === 0 && !isLoading) {
     return (
       <div className={styles.flashcardsContainer}>
         <div className={styles.emptyFlashcards}>
@@ -59,66 +135,23 @@ function Flashcards({ cards = defaultCards }: FlashcardsProps) {
     );
   }
 
-  const currentCard = cards[currentIndex];
-
   return (
     <div className={styles.flashcardsContainer}>
-      <div className={styles.flashcardWrapper}>
-        <div
-          className={`${styles.flashcard} ${isFlipped ? styles.flipped : ''}`}
-          onClick={handleFlip}
-        >
-          <div className={styles.flashcardInner}>
-            <div className={styles.flashcardFront}>
-              {currentCard.question}
-            </div>
-            <div className={styles.flashcardBack}>
-              {currentCard.answer}
-            </div>
-          </div>
-        </div>
-        <p className={styles.flipHint}>Click para voltear</p>
+      <div className={styles.flashcardsList}>
+        {cards.map((card) => (
+          <FlashcardItem key={card.id} card={card} />
+        ))}
         
-        <div className={styles.flashcardControls}>
-          <button
-            className={styles.controlButton}
-            onClick={handlePrevious}
-            disabled={currentIndex === 0}
-            title="Anterior"
-          >
-            <svg
-              className={styles.controlIcon}
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="M15.75 19.5 8.25 12l7.5-7.5" />
-            </svg>
-          </button>
-          
-          <span className={styles.cardCounter}>
-            {currentIndex + 1} / {cards.length}
-          </span>
-          
-          <button
-            className={styles.controlButton}
-            onClick={handleNext}
-            disabled={currentIndex === cards.length - 1}
-            title="Siguiente"
-          >
-            <svg
-              className={styles.controlIcon}
-              xmlns="http://www.w3.org/2000/svg"
-              fill="none"
-              viewBox="0 0 24 24"
-              strokeWidth="2"
-              stroke="currentColor"
-            >
-              <path strokeLinecap="round" strokeLinejoin="round" d="m8.25 4.5 7.5 7.5-7.5 7.5" />
-            </svg>
-          </button>
+        <div ref={loadMoreRef} className={styles.loadMoreTrigger}>
+          {isLoading && (
+            <div className={styles.loader}>
+              <div className={styles.spinner}></div>
+              <span>Cargando más flashcards...</span>
+            </div>
+          )}
+          {!hasMore && cards.length > 0 && (
+            <p className={styles.endMessage}>No hay más flashcards</p>
+          )}
         </div>
       </div>
     </div>
