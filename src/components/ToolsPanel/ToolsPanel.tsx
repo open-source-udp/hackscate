@@ -2,9 +2,8 @@ import { useState } from 'react';
 import styles from './ToolsPanel.module.css';
 import Chat from '../Chat';
 import Flashcards from '../Flashcards';
-import MindMap from '../MindMap';
 
-type ToolTab = 'chat' | 'flashcards' | 'mindmap';
+type ToolTab = 'chat' | 'flashcards';
 
 function ToolsPanel() {
   const [activeTab, setActiveTab] = useState<ToolTab>('chat');
