@@ -1,11 +1,14 @@
 import { useState, useRef, useEffect } from 'react';
 import styles from './Chat.module.css';
+import { sendChatMessage } from '../../services/api';
 
 interface Message {
   id: number;
   text: string;
   sender: 'user' | 'bot';
   attachedFiles?: string[];
+  sources?: string[];
+  followups?: string[];
 }
 
 interface ChatProps {
@@ -37,9 +40,11 @@ function Chat({ attachedFiles = [], onClearAttachments }: ChatProps) {
       text: inputValue.trim(),
       sender: 'user',
       attachedFiles: attachedFiles.length > 0 ? [...attachedFiles] : undefined,
-    };)
+    };
 
     setMessages((prev) => [...prev, userMessage]);
+    const currentInput = inputValue.trim();
+    const currentFiles = [...attachedFiles];
     setInputValue('');
     
     // Limpiar archivos adjuntos después de enviar
@@ -49,16 +54,34 @@ function Chat({ attachedFiles = [], onClearAttachments }: ChatProps) {
     
     setIsLoading(true);
 
-    // Simular respuesta del bot (aquí puedes integrar una API de chat)
-    setTimeout(() => {
+    try {
+      const response = await sendChatMessage(
+        currentInput || 'Explica el contenido de los archivos adjuntos.',
+        currentFiles.length > 0 ? currentFiles : undefined
+      );
+
       const botMessage: Message = {
         id: Date.now() + 1,
-        text: 'Esta es una respuesta de ejemplo. Puedes integrar una API de chat aquí.',
+        text: response.data.answer,
         sender: 'bot',
+        sources: response.sources,
+        followups: response.data.followups,
       };
       setMessages((prev) => [...prev, botMessage]);
+    } catch (error) {
+      const errorMessage: Message = {
+        id: Date.now() + 1,
+        text: error instanceof Error ? error.message : 'Error al procesar tu mensaje. Intenta de nuevo.',
+        sender: 'bot',
+      };
+      setMessages((prev) => [...prev, errorMessage]);
+    } finally {
       setIsLoading(false);
-    }, 1000);
+    }
+  };
+
+  const handleFollowupClick = (followup: string) => {
+    setInputValue(followup);
   };
 
   const getFileName = (key: string) => {
@@ -90,8 +113,41 @@ function Chat({ attachedFiles = [], onClearAttachments }: ChatProps) {
                 </div>
               )}
               {message.text && <p className={styles.messageText}>{message.text}</p>}
+              {message.sources && message.sources.length > 0 && (
+                <div className={styles.messageSources}>
+                  <span className={styles.sourcesLabel}>Fuentes:</span>
+                  {message.sources.map((source, index) => (
+                    <span key={index} className={styles.sourceChip}>
+                      📄 {source}
+                    </span>
+                  ))}
+                </div>
+              )}
+              {message.followups && message.followups.length > 0 && (
+                <div className={styles.messageFollowups}>
+                  {message.followups.map((followup, index) => (
+                    <button
+                      key={index}
+                      type="button"
+                      className={styles.followupButton}
+                      onClick={() => handleFollowupClick(followup)}
+                    >
+                      {followup}
+                    </button>
+                  ))}
+                </div>
+              )}
             </div>
           ))
+        )}
+        {isLoading && (
+          <div className={`${styles.message} ${styles.messageBot}`}>
+            <div className={styles.loadingDots}>
+              <span></span>
+              <span></span>
+              <span></span>
+            </div>
+          </div>
         )}
         <div ref={messagesEndRef} />
       </div>
