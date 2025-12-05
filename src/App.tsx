@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo } from 'react';
 import styles from './App.module.css';
 import FileList from './components/FileList';
-import Chat from './components/Chat';
+import ToolsPanel from './components/ToolsPanel';
 import SearchBar from './components/SearchBar';
 import { listFiles, downloadFile } from './services/r2';
 import type { R2File } from './services/r2';
@@ -70,7 +70,7 @@ function App() {
         )}
       </section>
       <aside className={styles.chatSection}>
-        <Chat />
+        <ToolsPanel />
       </aside>
     </div>
   );
