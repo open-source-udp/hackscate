@@ -50,10 +50,6 @@ function Chat() {
 
   return (
     <div className={styles.chat}>
-      <div className={styles.chatHeader}>
-        <h2 className={styles.chatTitle}>Chat</h2>
-      </div>
-      
       <div className={styles.chatMessages}>
         {messages.length === 0 ? (
           <div className={styles.emptyChat}>
