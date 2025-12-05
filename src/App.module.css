@@ -1,0 +1,30 @@
+.appContainer {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  height: 100vh;
+  width: 100%;
+}
+
+.filesSection {
+  padding: 24px;
+  overflow-y: auto;
+}
+
+.chatSection {
+  height: 95vh;
+  overflow: hidden;
+}
+
+.loadingContainer,
+.errorContainer {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #6c757d;
+  font-size: 16px;
+}
+
+.errorContainer {
+  color: #dc3545;
+}

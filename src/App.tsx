@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
-import './App.css'
+import styles from './App.module.css';
 import FileList from './components/FileList';
+import Chat from './components/Chat';
 import { listFiles, downloadFile } from './services/r2';
 import type { R2File } from './services/r2';
 
@@ -32,19 +33,26 @@ function App() {
     }
   };
 
-  if (loading) {
-    return <main><p>Cargando archivos...</p></main>;
-  }
-
-  if (error) {
-    return <main><p>Error: {error}</p></main>;
-  }
-
   return (
-    <main>
-      <FileList files={files} onDownload={handleDownload} />
-    </main>
-  )
+    <div className={styles.appContainer}>
+      <section className={styles.filesSection}>
+        {loading ? (
+          <div className={styles.loadingContainer}>
+            <p>Cargando archivos...</p>
+          </div>
+        ) : error ? (
+          <div className={styles.errorContainer}>
+            <p>Error: {error}</p>
+          </div>
+        ) : (
+          <FileList files={files} onDownload={handleDownload} />
+        )}
+      </section>
+      <aside className={styles.chatSection}>
+        <Chat />
+      </aside>
+    </div>
+  );
 }
 
-export default App
+export default App;
