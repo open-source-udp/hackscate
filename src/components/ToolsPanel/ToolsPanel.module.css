@@ -1,0 +1,48 @@
+.toolsPanel {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background-color: #ffffff;
+}
+
+.tabsHeader {
+  display: flex;
+  border-bottom: 1px solid #e9ecef;
+  background-color: #f8f9fa;
+}
+
+.tab {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 16px;
+  border: none;
+  background: none;
+  color: #6c757d;
+  font-size: 14px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+
+.tab:hover {
+  color: #333;
+  background-color: rgba(0, 0, 0, 0.02);
+}
+
+.tab.active {
+  color: #007bff;
+  border-bottom-color: #007bff;
+  background-color: #ffffff;
+}
+
+.tabIcon {
+  width: 18px;
+  height: 18px;
+}
+
+.tabContent {
+  flex: 1;
+  overflow: hidden;
+}
