@@ -2,6 +2,9 @@
 
 Plataforma de estudio inteligente que permite a estudiantes universitarios acceder, buscar y estudiar material académico utilizando inteligencia artificial.
 
+## Motivacion
+Otorgarle al estudiante la capacidad de poder estudiar en la misma plataforma donde se encuentra el material de semestres anteriores y no requerir de herramientas ajenas a la universidad. Esto permite generar un ecosistema de aprendizaje unificado, donde el alumno no pierde tiempo saltando entre aplicaciones, evitando la dependencia de plataformas externas. Además, centralizar los recursos académicos abre la puerta a experiencias de estudio más inteligentes, como búsqueda semántica, generación de resúmenes, creación automática de flashcards y mapas mentales basados en el material oficial. Esto beneficia tanto a quienes buscan repasar conceptos clave como a quienes necesitan apoyo para organizar su propio proceso de estudio. En conjunto, esto se traduce en una plataforma más eficiente, accesible y personalizada, alineada con la necesidad actual de herramientas que potencien el rendimiento académico sin fricciones ni barreras tecnológicas.
+
 ## 🎯 Características
 
 - **📁 Visualización de archivos**: Navega y descarga archivos PDF desde almacenamiento en la nube (Cloudflare R2)
@@ -25,9 +28,13 @@ hackscate/
 │
 └── RAGentHacksCATE/   # Backend de IA (Python)
     ├── app/
-    │   ├── rag/       # Sistema RAG
-    │   └── models/    # Modelos LLM
-    └── api.py         # API FastAPI
+    │   ├── controllers/    # Conversation Manager
+    │   ├── data/           # Generacion de Embbedings
+    │   ├── models/         # Modelos LLM
+    │   ├── rag/            # Sistema RAG
+    │   └── utils/          # Estructura de Conversa
+    ├── api.py       # API FastAPI
+    └── main.py      # Interfaz CLI (opcional)
 ```
 
 ## 🚀 Instalación
@@ -36,6 +43,7 @@ hackscate/
 
 - Node.js 18+
 - Python 3.10+
+- APYKEY OpenAI
 - Cuenta de Cloudflare R2 (para almacenamiento de archivos)
 
 ### Frontend
@@ -91,6 +99,33 @@ VITE_API_URL=http://localhost:3001
 VITE_RAG_API_URL=http://localhost:8000
 ```
 
+### Variables de entorno del Backend (`.env`)
+
+```env
+OPENAI_API_KEY= "OPENAI_API_KEY"
+
+# Directorio donde se guardará la base de datos de Chroma
+CHROMA_PERSIST_DIR=./chroma_db
+
+# Tamaño máximo de cada chunk de texto
+MAX_CHUNK_SIZE=100000
+
+# Nombre del modelo de embeddings a usar (OpenAI u otro proveedor)
+EMBEDDING_MODEL=text-embedding-3-small
+
+# Modelo LLM principal (gpt-5 nano no disponible)
+LLM_MODEL=gpt-4.1-nano
+
+# Forzar siempre OCR con Marker (true/false)
+FORCE_MARKER_OCR=false
+
+# Idiomas a usar en OCR (separados por coma)
+OCR_LANGS=en,es
+
+# Nivel de logueo (DEBUG, INFO, WARNING, ERROR)
+LOG_LEVEL=INFO
+
+```
 ## 📡 API Endpoints
 
 ### Servidor Proxy (Express - Puerto 3001)
@@ -149,8 +184,11 @@ VITE_RAG_API_URL=http://localhost:8000
 ### Backend
 - **FastAPI** - Framework de API
 - **LangChain** - Orquestación de LLM
+- **Pydantic** - Estandarizacion de preguntas y respuestas
 - **ChromaDB** - Base de datos vectorial
-- **OpenAI/Azure** - Modelos de lenguaje
+- **Tiktoken** - BPE tokeniser 
+- **marker-pdf** - OCR y parsing de PDFs
+- **OpenAI** - Modelos de lenguaje
 
 ## 📂 Estructura de Componentes
 
@@ -190,6 +228,7 @@ src/components/
 
 Proyecto desarrollado para [HacksCATE](https://github.com/open-source-udp/hackscate) - Universidad Diego Portales
 
-## 📄 Licencia
 
-MIT License
+- [Samuel Angulo](https://github.com/polaarts)
+- [Matias Diaz Llancan](https://github.com/theramdomx)
+- [Hugo Rojas](https://github.com/HugoosZ)
